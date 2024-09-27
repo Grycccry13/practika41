@@ -1,0 +1,41 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Check code style
+      run: npm run lint 
+
+    - name: Run unit tests
+      run: npm run test
+
+    - name: Security scan
+      uses: snyk/snyk-action@v4
+      with:
+        targetFile: 'package.json'
+
+    - name: Static code analysis
+      uses: SonarSource/sonar-scanner-action@master
+      with:
+        serverUrl: 'https://sonarcloud.io'
+        token: ${{ secrets.SONAR_TOKEN }}
+
+     
